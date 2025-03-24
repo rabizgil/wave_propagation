@@ -73,20 +73,19 @@ def solve_one_step(
     Returns:
         Numpy ndarray of shape (3, size_x, size_y) where ndarray[0] is the propagated wavefield.
     """
-    # laplacian_kernel = build_laplacian_kernel(kernel_size=kernel_size)
     dimx, dimy = wavefield.shape[1:]
     wavefield[2] = wavefield[1]
     wavefield[1] = wavefield[0]
     boundary_size = laplacian_kernel.shape[0] // 2
     conv_result = (
         tau[boundary_size : dimx - boundary_size, boundary_size : dimy - boundary_size]
-        * convolve2d(wavefield[1], laplacian_kernel, mode="valid")
+        * convolve2d(wavefield[1], laplacian_kernel, mode="valid", boundary="symm")
         + 2 * wavefield[1, boundary_size : dimx - boundary_size, boundary_size : dimy - boundary_size]
         - wavefield[2, boundary_size : dimx - boundary_size, boundary_size : dimy - boundary_size]
     )
+
     wavefield[0, boundary_size : dimx - boundary_size, boundary_size : dimy - boundary_size] = conv_result
     wavefield = update_boundaries(wavefield, kappa, boundary_size)
-    # wavefield[0, :, :] *= 0.995
     return wavefield
 
 
