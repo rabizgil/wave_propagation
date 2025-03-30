@@ -4,7 +4,7 @@ import numpy as np
 from scipy.signal import convolve2d
 
 
-def delta_fn(k: int) -> int:
+def delta_fn(k: int) -> bool:
     """
     Kronecker delta function.
 
@@ -12,7 +12,7 @@ def delta_fn(k: int) -> int:
         k : int
 
     Returns:
-        True if k is 0, False otherwise.
+        1 if k is 0, 0 otherwise.
     """
     if k == 0:
         return True
@@ -22,9 +22,9 @@ def delta_fn(k: int) -> int:
 
 def build_laplacian_kernel(kernel_size: int = 5) -> np.ndarray:
     """
-    Returns a kernel for Laplacian in wavefield equation.
+    Returns a Laplacian kernel used in wavefield equation.
     Currently implemented for 2D media only.
-    Uses the dinite difference coefficient estimation summarized by Taylor, Cameron R.
+    Uses the finite difference coefficient estimation summarized by Taylor, Cameron R.
     https://web.media.mit.edu/~crtaylor/calculator.html
 
     Args:
@@ -41,7 +41,7 @@ def build_laplacian_kernel(kernel_size: int = 5) -> np.ndarray:
     powers = np.array([[j for _ in range(kernel_size)] for j in range(kernel_size)], dtype=np.float32)
     stencil = np.power(stencil, powers)
     factor_vector = np.array(
-        [math.factorial(derivative_order) if delta_fn(i - derivative_order) else 0 for i in range(kernel_size)]
+        [math.factorial(derivative_order) * delta_fn(i - derivative_order) for i in range(kernel_size)]
     )
     derivation_coef = np.matmul(np.linalg.inv(stencil), factor_vector)
     laplacian_matrix = np.zeros((kernel_size, kernel_size))
@@ -58,7 +58,7 @@ def solve_one_step(
 ) -> np.ndarray:
     """
     Takes a wavefield array containing previous, current and future steps,
-    tau and kappa fields and pre-built Laplacian kernel to perform step fowrward propagation.
+    tau and kappa fields and pre-built Laplacian kernel to perform step forward propagation.
     Currently only supports Mur boundary condition.
 
     Args:
