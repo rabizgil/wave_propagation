@@ -15,7 +15,7 @@ Propagation on CPU for 1200x800 velocity grid with 1x1 step.<br>
 solve_one_step(wavefield, tau, kappa, laplacian_kernel, device="cpu")
 ```
 \>>> 33.5 ms ± 1.75 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)<br>
-Propagation on GPU for 1200x800 velocity grid with 1x1 step.<br>
+Propagation on GPU for 1200x800 velocity grid with 1x1 step.<br><br>
 ```python
 %%timeit
 solve_one_step(wavefield, tau, kappa, laplacian_kernel, device="cuda")
